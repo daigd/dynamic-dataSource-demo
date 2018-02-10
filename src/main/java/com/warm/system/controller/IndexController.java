@@ -41,5 +41,9 @@ public class IndexController {
     public ResponseEntity<BigDecimal> getPrice() {
         return ResponseEntity.ok(orderService.getOrderPriceByUserId(1));
     }
+    @GetMapping("/price2")
+    public ResponseEntity<BigDecimal> getPrice2() {
+        return ResponseEntity.ok(userService.getOrderPriceByUserId(1));
+    }
 }
 

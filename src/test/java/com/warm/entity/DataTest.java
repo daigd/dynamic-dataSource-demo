@@ -21,12 +21,17 @@ public class DataTest {
     private OrderService orderService;
 
     @Test
-    public void test1() {
+    public void test() {
         userService.getUserList().stream().forEach(item -> System.out.println(item));
+        orderService.getOrderList().stream().forEach(item -> System.out.println(item));
     }
 
+    /**
+     * 测试一下注解方式
+     */
     @Test
     public void test2() {
         orderService.getOrderList().stream().forEach(item -> System.out.println(item));
+        System.out.println(userService.getOrderPriceByUserId(1));
     }
 }
