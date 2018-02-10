@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- scan:配置文件如果发生改变，将会重新加载，默认值为true -->
+<configuration scan="true" scanPeriod="10 seconds">  
+    <!-- <include resource="org/springframework/boot/logging/logback/base.xml"/> -->
+	<!-- 日志文件路径 -->
+	<!-- <springProperty  name="logFilePath" source="logging.path"/> -->
+	<property resource="application.yml" />
+	<substitutionProperty name="LOG_HOME" value="${logging.path}" />
+	<substitutionProperty name="PROJECT_NAME" value="${spring.application.name}" />
+	<!--<substitutionProperty name="CUR_NODE" value="${info.node}" />-->
+
+	<!-- 日志数据库路径 -->
+	<!-- <springProperty  name="logDbPath" source="spring.datasource.one.url"/>
+	<springProperty  name="logDbDriver" source="spring.datasource.one.driver-class-name"/>
+	<springProperty  name="logDbUser" source="spring.datasource.one.username"/>
+	<springProperty  name="logDbPwd" source="spring.datasource.one.password"/> -->
+	
+	<!-- 将日志文件 -->
+	<appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<append>true</append>
+		<encoder>
+			<pattern>
+				[ %-5level] [%date{yyyy-MM-dd HH:mm:ss}] %logger{96} [%line] - %msg%n
+			</pattern>
+			<charset>utf-8</charset>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/${PROJECT_NAME}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>50 MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<!--最多保留30天log-->
+            <maxHistory>30</maxHistory>
+		</rollingPolicy>
+	</appender>
+	<!-- 将日志错误文件-->
+	<appender name="file_error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<append>true</append>
+		<encoder>
+			<pattern>
+				[ %-5level] [%date{yyyy-MM-dd HH:mm:ss}] %logger{96} [%line] - %msg%n
+			</pattern>
+			<charset>utf-8</charset>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/${PROJECT_NAME}-error-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>50 MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<!--最多保留30天log-->
+            <maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ERROR</level>
+			<!-- <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY </onMismatch> -->
+		</filter>
+	</appender>
+	<!-- 将日志写入控制台 -->
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>
+				[ %-5level] [%date{yyyy-MM-dd HH:mm:ss}] %logger{96} [%line] - %msg%n
+			</pattern>
+			<!--<charset>utf-8</charset>-->
+		</encoder>
+	</appender>
+	<!-- 将日志写入数据库 -->
+    <!-- <appender name="DB-CLASSIC-MYSQL-POOL" class="ch.qos.logback.classic.db.DBAppender">  
+        <connectionSource class="ch.qos.logback.core.db.DataSourceConnectionSource">  
+            <dataSource class="org.springframework.jdbc.datasource.DriverManagerDataSource">  
+                <driverClassName>${logDbDriver}</driverClassName>  
+                <url>${logDbPath}</url>  
+                <username>${logDbUser}</username>  
+                <password>${logDbPwd}</password>  
+            </dataSource>  
+        </connectionSource>  
+    </appender>  -->
+	<!-- spring扩展，分环境配置log信息 -->
+	<springProfile name="dev">
+	
+		<!-- <logger name="sand.dao" level="DEBUG"/> -->
+		<!-- <logger name="org.springframework.web" level="INFO"/> -->
+		<logger name="org.springboot.sample" level="TRACE" />
+		<logger name="org.springframework.cloud" level="INFO" />
+		<logger name="com.netflix" level="INFO"></logger>
+		<logger name="org.springframework.boot" level="INFO"></logger>
+		<logger name="org.springframework.web" level="INFO"/>
+		<logger name="jdbc.sqltiming" level="debug"/>
+		<logger name="com.ibatis" level="debug" />
+	    <logger name="com.ibatis.common.jdbc.SimpleDataSource" level="debug" />
+	    <logger name="com.ibatis.common.jdbc.ScriptRunner" level="debug" />
+	    <logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" level="debug" />
+	    <logger name="java.sql.Connection" level="debug" />
+	    <logger name="java.sql.Statement" level="debug" />
+	    <logger name="java.sql.PreparedStatement" level="debug" />
+	    <logger name="java.sql.ResultSet" level="debug" />
+		<logger name="com.warm" level="debug"/>
+	    <root level="DEBUG">
+			<appender-ref ref="console" />
+			<appender-ref ref="file" />
+		</root>
+		<root level="ERROR">
+			<appender-ref ref="file_error" />
+			<!-- <appender-ref ref="DB-CLASSIC-MYSQL-POOL" /> -->
+		</root>
+	</springProfile>
+	<springProfile name="test">
+		<logger name="org.springboot.sample" level="TRACE" />
+		<logger name="org.springframework.cloud" level="INFO" />
+		<logger name="com.netflix" level="INFO"></logger>
+		<logger name="org.springframework.boot" level="INFO"></logger>
+		
+		<logger name="org.springframework.web" level="INFO"/>
+		<logger name="jdbc.sqltiming" level="debug"/>
+		<logger name="com.ibatis" level="debug" />
+	    <logger name="com.ibatis.common.jdbc.SimpleDataSource" level="debug" />
+	    <logger name="com.ibatis.common.jdbc.ScriptRunner" level="debug" />
+	    <logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" level="debug" />
+	    <logger name="java.sql.Connection" level="debug" />
+	    <logger name="java.sql.Statement" level="debug" />
+	    <logger name="java.sql.PreparedStatement" level="debug" />
+	    <logger name="java.sql.ResultSet" level="debug" />
+		<logger name="com.warm" level="DEBUG"/>
+		<root level="DEBUG">
+			<!-- <appender-ref ref="console" /> -->
+			<appender-ref ref="file" />
+		</root>
+		<root level="ERROR">
+			<appender-ref ref="file_error" />
+			<!-- <appender-ref ref="DB-CLASSIC-MYSQL-POOL" /> -->
+		</root>
+	</springProfile>
+	<springProfile name="prod">
+		<logger name="org.springboot.sample" level="TRACE" />
+		<logger name="org.springframework.cloud" level="INFO" />
+		<logger name="com.netflix" level="INFO"></logger>
+		<logger name="org.springframework.boot" level="INFO"></logger>
+		
+		<logger name="org.springframework.web" level="INFO"/>
+		<logger name="jdbc.sqltiming" level="debug"/>
+		<logger name="com.ibatis" level="debug" />
+	    <logger name="com.ibatis.common.jdbc.SimpleDataSource" level="debug" />
+	    <logger name="com.ibatis.common.jdbc.ScriptRunner" level="debug" />
+	    <logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" level="debug" />
+	    <logger name="java.sql.Connection" level="debug" />
+	    <logger name="java.sql.Statement" level="debug" />
+	    <logger name="java.sql.PreparedStatement" level="debug" />
+	    <logger name="java.sql.ResultSet" level="debug" />
+		<logger name="com.warm" level="info"/>
+		<root level="DEBUG">
+			<!-- <appender-ref ref="console" /> -->
+			<appender-ref ref="file" />
+		</root>
+		<root level="ERROR">
+			<appender-ref ref="file_error" />
+			<!-- <appender-ref ref="DB-CLASSIC-MYSQL-POOL" /> -->
+		</root>
+	</springProfile>
+</configuration>
